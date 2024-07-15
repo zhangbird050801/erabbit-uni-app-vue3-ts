@@ -1,0 +1,1 @@
+{"version":3,"file":"category.js","sources":["../../../../../uniPage:/cGFnZXMvY2F0ZWdvcnkvY2F0ZWdvcnkudnVl"],"sourcesContent":["import MiniProgramPage from 'D:/uniapp/erabbit-uni-app-vue3-ts/src/pages/category/category.vue'\nwx.createPage(MiniProgramPage)"],"names":[],"mappings":";;;;;;;;;;;AACA,GAAG,WAAW,eAAe;"}
