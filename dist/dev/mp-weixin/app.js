@@ -9,6 +9,8 @@ if (!Math) {
   "./pages/cart/cart.js";
   "./pages/category/category.js";
   "./pages/login/login.js";
+  "./pages/hot/hot.js";
+  "./pages/goods/goods.js";
 }
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "App",
