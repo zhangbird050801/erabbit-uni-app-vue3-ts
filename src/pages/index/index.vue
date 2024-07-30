@@ -10,8 +10,8 @@
   import CustomNavbar from './components/CustomNavbar.vue'
   import CategoryPanel from './components/CategoryPanel.vue'
   import HotPanel from './components/HotPanel.vue'
-  import type { XtxGuessInstance } from '@/types/component'
   import PageSkeleton from './components/PageSkeleton.vue'
+  import { userGuessList } from '@/composables/index'
 
   // 获取轮播图数据
   const bannerList = ref<BannerItem[]>([])
@@ -49,13 +49,7 @@
     isLoading.value = false
   })
 
-  // 获取猜你喜欢组件实例
-  const guessRef = ref<XtxGuessInstance>()
-
-  // 滚动触底
-  const onScrolltolower = ()=>{
-    guessRef.value?.getMore()
-  }
+  const { guessRef, onScrolltolower } = userGuessList()
 
   const isTriggered = ref(false)
 

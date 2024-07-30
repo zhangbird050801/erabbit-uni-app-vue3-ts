@@ -8,6 +8,17 @@
     "pages/hot/hot",
     "pages/goods/goods"
   ],
+  "subPackages": [
+    {
+      "root": "pagesMember",
+      "pages": [
+        "settings/settings",
+        "profile/profile",
+        "address/address",
+        "address-form/address-form"
+      ]
+    }
+  ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "",
@@ -45,6 +56,14 @@
         "selectedIconPath": "static/tabs/user_selected.png"
       }
     ]
+  },
+  "preloadRule": {
+    "pages/my/my": {
+      "network": "all",
+      "packages": [
+        "pagesMember"
+      ]
+    }
   },
   "usingComponents": {}
 }

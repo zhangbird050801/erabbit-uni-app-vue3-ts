@@ -10,8 +10,10 @@ if (!Array) {
 }
 const _easycom_uni_popup = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-popup/uni-popup.js";
 if (!Math) {
-  _easycom_uni_popup();
+  (AddressPanel + ServicePanel + _easycom_uni_popup)();
 }
+const AddressPanel = () => "./components/AddressPanel.js";
+const ServicePanel = () => "./components/ServicePanel.js";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "goods",
   props: {
@@ -39,9 +41,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       });
     };
     const popup = common_vendor.ref();
+    const popupName = common_vendor.ref();
+    const openPopup = (name) => {
+      var _a;
+      popupName.value = name;
+      (_a = popup.value) == null ? void 0 : _a.open();
+    };
     return (_ctx, _cache) => {
       var _a, _b, _c, _d, _e, _f, _g, _h, _i;
-      return {
+      return common_vendor.e({
         a: common_vendor.f((_a = goods.value) == null ? void 0 : _a.mainPictures, (item, k0, i0) => {
           return {
             a: common_vendor.o(($event) => onTapImage(item), item),
@@ -55,24 +63,22 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         e: common_vendor.t((_c = goods.value) == null ? void 0 : _c.price),
         f: common_vendor.t((_d = goods.value) == null ? void 0 : _d.name),
         g: common_vendor.t((_e = goods.value) == null ? void 0 : _e.desc),
-        h: common_vendor.o(($event) => {
-          var _a2;
-          return (_a2 = popup.value) == null ? void 0 : _a2.open("bottom");
-        }),
-        i: common_vendor.f((_f = goods.value) == null ? void 0 : _f.details.properties, (item, k0, i0) => {
+        h: common_vendor.o(($event) => openPopup("address")),
+        i: common_vendor.o(($event) => openPopup("service")),
+        j: common_vendor.f((_f = goods.value) == null ? void 0 : _f.details.properties, (item, k0, i0) => {
           return {
             a: common_vendor.t(item.name),
             b: common_vendor.t(item.value),
             c: item.name
           };
         }),
-        j: common_vendor.f((_g = goods.value) == null ? void 0 : _g.details.pictures, (item, k0, i0) => {
+        k: common_vendor.f((_g = goods.value) == null ? void 0 : _g.details.pictures, (item, k0, i0) => {
           return {
             a: item,
             b: item
           };
         }),
-        k: common_vendor.f((_h = goods.value) == null ? void 0 : _h.similarProducts, (item, k0, i0) => {
+        l: common_vendor.f((_h = goods.value) == null ? void 0 : _h.similarProducts, (item, k0, i0) => {
           return {
             a: item.picture,
             b: common_vendor.t(item.name),
@@ -81,19 +87,29 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: `/pages/goods/goods?id=${item.id}`
           };
         }),
-        l: ((_i = common_vendor.unref(safeAreaInsets)) == null ? void 0 : _i.bottom) + "px",
-        m: common_vendor.o(($event) => {
+        m: ((_i = common_vendor.unref(safeAreaInsets)) == null ? void 0 : _i.bottom) + "px",
+        n: popupName.value === "address"
+      }, popupName.value === "address" ? {
+        o: common_vendor.o(($event) => {
           var _a2;
           return (_a2 = popup.value) == null ? void 0 : _a2.close();
-        }),
-        n: common_vendor.sr(popup, "76ab1f1d-0", {
+        })
+      } : {}, {
+        p: popupName.value === "service"
+      }, popupName.value === "service" ? {
+        q: common_vendor.o(($event) => {
+          var _a2;
+          return (_a2 = popup.value) == null ? void 0 : _a2.close();
+        })
+      } : {}, {
+        r: common_vendor.sr(popup, "76ab1f1d-0", {
           "k": "popup"
         }),
-        o: common_vendor.p({
+        s: common_vendor.p({
           type: "bottom",
           ["background-color"]: "#fff"
         })
-      };
+      });
     };
   }
 });

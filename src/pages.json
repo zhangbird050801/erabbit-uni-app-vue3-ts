@@ -21,6 +21,8 @@
     {
       "path": "pages/my/my",
       "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
         "navigationBarTitleText": "我的"
       }
     },
@@ -51,7 +53,7 @@
     },
     {
       "path" : "pages/goods/goods",
-      "style" : 
+      "style" :
       {
         "navigationBarTitleText" : "商品详情"
       }
@@ -95,5 +97,48 @@
         "selectedIconPath": "static/tabs/user_selected.png"
       }
     ]
+  },
+  "subPackages": [
+    {
+      "root": "pagesMember",
+      "pages": [
+        {
+          "path": "settings/settings",
+          "style": {
+          "navigationBarTitleText": "设置"
+          }
+        },
+        {
+          "path" : "profile/profile",
+          "style" :
+          {
+            "navigationStyle": "custom",
+            "navigationBarTextStyle": "white",
+            "navigationBarTitleText" : "个人信息"
+          }
+        },
+        {
+          "path" : "address/address",
+          "style" :
+          {
+            "navigationBarTitleText" : "地址管理"
+          }
+        },
+        {
+          "path" : "address-form/address-form",
+          "style" :
+          {
+            "navigationBarTitleText" : ""
+          }
+        }
+      ]
+    }
+  ],
+  // 分包预下载规则
+  "preloadRule": {
+    "pages/my/my":{
+      "network": "all",
+      "packages": ["pagesMember"]
+    }
   }
 }

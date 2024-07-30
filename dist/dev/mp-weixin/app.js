@@ -11,6 +11,10 @@ if (!Math) {
   "./pages/login/login.js";
   "./pages/hot/hot.js";
   "./pages/goods/goods.js";
+  "./pagesMember/settings/settings.js";
+  "./pagesMember/profile/profile.js";
+  "./pagesMember/address/address.js";
+  "./pagesMember/address-form/address-form.js";
 }
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "App",

@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const services_home = require("../../services/home.js");
+const composables_index = require("../../composables/index.js");
 require("../../utils/http.js");
 require("../../stores/index.js");
 require("../../stores/modules/member.js");
@@ -46,11 +47,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       ]);
       isLoading.value = false;
     });
-    const guessRef = common_vendor.ref();
-    const onScrolltolower = () => {
-      var _a;
-      (_a = guessRef.value) == null ? void 0 : _a.getMore();
-    };
+    const { guessRef, onScrolltolower } = composables_index.userGuessList();
     const isTriggered = common_vendor.ref(false);
     const onRefresherrefresh = async () => {
       var _a, _b;
@@ -78,7 +75,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, {
         f: common_vendor.o(onRefresherrefresh),
         g: isTriggered.value,
-        h: common_vendor.o(onScrolltolower)
+        h: common_vendor.o(
+          //@ts-ignore
+          (...args) => common_vendor.unref(onScrolltolower) && common_vendor.unref(onScrolltolower)(...args)
+        )
       });
     };
   }
