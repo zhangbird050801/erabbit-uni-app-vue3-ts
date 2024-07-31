@@ -476,10 +476,10 @@ function validateProp$1(name, value, prop, isAbsent) {
   }
   if (type != null) {
     let isValid = false;
-    const types = isArray(type) ? type : [type];
+    const types2 = isArray(type) ? type : [type];
     const expectedTypes = [];
-    for (let i = 0; i < types.length && !isValid; i++) {
-      const { valid, expectedType } = assertType$1(value, types[i]);
+    for (let i = 0; i < types2.length && !isValid; i++) {
+      const { valid, expectedType } = assertType$1(value, types2[i]);
       expectedTypes.push(expectedType || "");
       isValid = valid;
     }
@@ -521,7 +521,7 @@ function getInvalidTypeMessage$1(name, value, expectedTypes) {
   const receivedType = toRawType(value);
   const expectedValue = styleValue$1(value, expectedType);
   const receivedValue = styleValue$1(value, receivedType);
-  if (expectedTypes.length === 1 && isExplicable$1(expectedType) && !isBoolean$1(expectedType, receivedType)) {
+  if (expectedTypes.length === 1 && isExplicable$1(expectedType) && !isBoolean$2(expectedType, receivedType)) {
     message += ` with value ${expectedValue}`;
   }
   message += `, got ${receivedType} `;
@@ -547,7 +547,7 @@ function isExplicable$1(type) {
   const explicitTypes = ["string", "number", "boolean"];
   return explicitTypes.some((elem) => type.toLowerCase() === elem);
 }
-function isBoolean$1(...args) {
+function isBoolean$2(...args) {
   return args.some((elem) => elem.toLowerCase() === "boolean");
 }
 function tryCatch(fn) {
@@ -4593,10 +4593,10 @@ function validateProp(name, value, prop, isAbsent) {
   }
   if (type != null && type !== true) {
     let isValid = false;
-    const types = isArray(type) ? type : [type];
+    const types2 = isArray(type) ? type : [type];
     const expectedTypes = [];
-    for (let i = 0; i < types.length && !isValid; i++) {
-      const { valid, expectedType } = assertType(value, types[i]);
+    for (let i = 0; i < types2.length && !isValid; i++) {
+      const { valid, expectedType } = assertType(value, types2[i]);
       expectedTypes.push(expectedType || "");
       isValid = valid;
     }
@@ -4639,7 +4639,7 @@ function getInvalidTypeMessage(name, value, expectedTypes) {
   const receivedType = toRawType(value);
   const expectedValue = styleValue(value, expectedType);
   const receivedValue = styleValue(value, receivedType);
-  if (expectedTypes.length === 1 && isExplicable(expectedType) && !isBoolean(expectedType, receivedType)) {
+  if (expectedTypes.length === 1 && isExplicable(expectedType) && !isBoolean$1(expectedType, receivedType)) {
     message += ` with value ${expectedValue}`;
   }
   message += `, got ${receivedType} `;
@@ -4661,7 +4661,7 @@ function isExplicable(type) {
   const explicitTypes = ["string", "number", "boolean"];
   return explicitTypes.some((elem) => type.toLowerCase() === elem);
 }
-function isBoolean(...args) {
+function isBoolean$1(...args) {
   return args.some((elem) => elem.toLowerCase() === "boolean");
 }
 function createAppContext() {
@@ -5305,7 +5305,7 @@ function clone(src, seen) {
     return src;
   }
 }
-function deepCopy(src) {
+function deepCopy$1(src) {
   return clone(src, typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : /* @__PURE__ */ new Map());
 }
 function getMPInstanceData(instance, keys) {
@@ -5320,7 +5320,7 @@ function patch(instance, data, oldData) {
   if (!data) {
     return;
   }
-  data = deepCopy(data);
+  data = deepCopy$1(data);
   const ctx = instance.ctx;
   const mpType = ctx.mpType;
   if (mpType === "page" || mpType === "component") {
@@ -7620,6 +7620,632 @@ const onShow = /* @__PURE__ */ createHook(ON_SHOW);
 const onHide = /* @__PURE__ */ createHook(ON_HIDE);
 const onLaunch = /* @__PURE__ */ createHook(ON_LAUNCH);
 const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
+let mpMixins = {};
+mpMixins = {
+  data() {
+    return {
+      is_show: "none"
+    };
+  },
+  watch: {
+    show(newVal) {
+      this.is_show = this.show;
+    }
+  },
+  created() {
+    this.swipeaction = this.getSwipeAction();
+    if (this.swipeaction && Array.isArray(this.swipeaction.children)) {
+      this.swipeaction.children.push(this);
+    }
+  },
+  mounted() {
+    this.is_show = this.show;
+  },
+  methods: {
+    // wxs 中调用
+    closeSwipe(e2) {
+      if (this.autoClose && this.swipeaction) {
+        this.swipeaction.closeOther(this);
+      }
+    },
+    change(e2) {
+      this.$emit("change", e2.open);
+      if (this.is_show !== e2.open) {
+        this.is_show = e2.open;
+      }
+    },
+    appTouchStart(e2) {
+      const {
+        clientX
+      } = e2.changedTouches[0];
+      this.clientX = clientX;
+      this.timestamp = (/* @__PURE__ */ new Date()).getTime();
+    },
+    appTouchEnd(e2, index2, item, position) {
+      const {
+        clientX
+      } = e2.changedTouches[0];
+      let diff2 = Math.abs(this.clientX - clientX);
+      let time = (/* @__PURE__ */ new Date()).getTime() - this.timestamp;
+      if (diff2 < 40 && time < 300) {
+        this.$emit("click", {
+          content: item,
+          index: index2,
+          position
+        });
+      }
+    },
+    onClickForPC(index2, item, position) {
+      return;
+    }
+  }
+};
+const mpwxs = mpMixins;
+let bindIngXMixins = {};
+let otherMixins = {};
+var pattern = {
+  email: /^\S+?@\S+?\.\S+?$/,
+  idcard: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
+  url: new RegExp(
+    "^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$",
+    "i"
+  )
+};
+const FORMAT_MAPPING = {
+  "int": "integer",
+  "bool": "boolean",
+  "double": "number",
+  "long": "number",
+  "password": "string"
+  // "fileurls": 'array'
+};
+function formatMessage(args, resources = "") {
+  var defaultMessage = ["label"];
+  defaultMessage.forEach((item) => {
+    if (args[item] === void 0) {
+      args[item] = "";
+    }
+  });
+  let str = resources;
+  for (let key in args) {
+    let reg = new RegExp("{" + key + "}");
+    str = str.replace(reg, args[key]);
+  }
+  return str;
+}
+function isEmptyValue(value, type) {
+  if (value === void 0 || value === null) {
+    return true;
+  }
+  if (typeof value === "string" && !value) {
+    return true;
+  }
+  if (Array.isArray(value) && !value.length) {
+    return true;
+  }
+  if (type === "object" && !Object.keys(value).length) {
+    return true;
+  }
+  return false;
+}
+const types = {
+  integer(value) {
+    return types.number(value) && parseInt(value, 10) === value;
+  },
+  string(value) {
+    return typeof value === "string";
+  },
+  number(value) {
+    if (isNaN(value)) {
+      return false;
+    }
+    return typeof value === "number";
+  },
+  "boolean": function(value) {
+    return typeof value === "boolean";
+  },
+  "float": function(value) {
+    return types.number(value) && !types.integer(value);
+  },
+  array(value) {
+    return Array.isArray(value);
+  },
+  object(value) {
+    return typeof value === "object" && !types.array(value);
+  },
+  date(value) {
+    return value instanceof Date;
+  },
+  timestamp(value) {
+    if (!this.integer(value) || Math.abs(value).toString().length > 16) {
+      return false;
+    }
+    return true;
+  },
+  file(value) {
+    return typeof value.url === "string";
+  },
+  email(value) {
+    return typeof value === "string" && !!value.match(pattern.email) && value.length < 255;
+  },
+  url(value) {
+    return typeof value === "string" && !!value.match(pattern.url);
+  },
+  pattern(reg, value) {
+    try {
+      return new RegExp(reg).test(value);
+    } catch (e2) {
+      return false;
+    }
+  },
+  method(value) {
+    return typeof value === "function";
+  },
+  idcard(value) {
+    return typeof value === "string" && !!value.match(pattern.idcard);
+  },
+  "url-https"(value) {
+    return this.url(value) && value.startsWith("https://");
+  },
+  "url-scheme"(value) {
+    return value.startsWith("://");
+  },
+  "url-web"(value) {
+    return false;
+  }
+};
+class RuleValidator {
+  constructor(message) {
+    this._message = message;
+  }
+  async validateRule(fieldKey, fieldValue, value, data, allData) {
+    var result = null;
+    let rules = fieldValue.rules;
+    let hasRequired = rules.findIndex((item) => {
+      return item.required;
+    });
+    if (hasRequired < 0) {
+      if (value === null || value === void 0) {
+        return result;
+      }
+      if (typeof value === "string" && !value.length) {
+        return result;
+      }
+    }
+    var message = this._message;
+    if (rules === void 0) {
+      return message["default"];
+    }
+    for (var i = 0; i < rules.length; i++) {
+      let rule = rules[i];
+      let vt = this._getValidateType(rule);
+      Object.assign(rule, {
+        label: fieldValue.label || `["${fieldKey}"]`
+      });
+      if (RuleValidatorHelper[vt]) {
+        result = RuleValidatorHelper[vt](rule, value, message);
+        if (result != null) {
+          break;
+        }
+      }
+      if (rule.validateExpr) {
+        let now = Date.now();
+        let resultExpr = rule.validateExpr(value, allData, now);
+        if (resultExpr === false) {
+          result = this._getMessage(rule, rule.errorMessage || this._message["default"]);
+          break;
+        }
+      }
+      if (rule.validateFunction) {
+        result = await this.validateFunction(rule, value, data, allData, vt);
+        if (result !== null) {
+          break;
+        }
+      }
+    }
+    if (result !== null) {
+      result = message.TAG + result;
+    }
+    return result;
+  }
+  async validateFunction(rule, value, data, allData, vt) {
+    let result = null;
+    try {
+      let callbackMessage = null;
+      const res = await rule.validateFunction(rule, value, allData || data, (message) => {
+        callbackMessage = message;
+      });
+      if (callbackMessage || typeof res === "string" && res || res === false) {
+        result = this._getMessage(rule, callbackMessage || res, vt);
+      }
+    } catch (e2) {
+      result = this._getMessage(rule, e2.message, vt);
+    }
+    return result;
+  }
+  _getMessage(rule, message, vt) {
+    return formatMessage(rule, message || rule.errorMessage || this._message[vt] || message["default"]);
+  }
+  _getValidateType(rule) {
+    var result = "";
+    if (rule.required) {
+      result = "required";
+    } else if (rule.format) {
+      result = "format";
+    } else if (rule.arrayType) {
+      result = "arrayTypeFormat";
+    } else if (rule.range) {
+      result = "range";
+    } else if (rule.maximum !== void 0 || rule.minimum !== void 0) {
+      result = "rangeNumber";
+    } else if (rule.maxLength !== void 0 || rule.minLength !== void 0) {
+      result = "rangeLength";
+    } else if (rule.pattern) {
+      result = "pattern";
+    } else if (rule.validateFunction) {
+      result = "validateFunction";
+    }
+    return result;
+  }
+}
+const RuleValidatorHelper = {
+  required(rule, value, message) {
+    if (rule.required && isEmptyValue(value, rule.format || typeof value)) {
+      return formatMessage(rule, rule.errorMessage || message.required);
+    }
+    return null;
+  },
+  range(rule, value, message) {
+    const {
+      range,
+      errorMessage
+    } = rule;
+    let list = new Array(range.length);
+    for (let i = 0; i < range.length; i++) {
+      const item = range[i];
+      if (types.object(item) && item.value !== void 0) {
+        list[i] = item.value;
+      } else {
+        list[i] = item;
+      }
+    }
+    let result = false;
+    if (Array.isArray(value)) {
+      result = new Set(value.concat(list)).size === list.length;
+    } else {
+      if (list.indexOf(value) > -1) {
+        result = true;
+      }
+    }
+    if (!result) {
+      return formatMessage(rule, errorMessage || message["enum"]);
+    }
+    return null;
+  },
+  rangeNumber(rule, value, message) {
+    if (!types.number(value)) {
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
+    }
+    let {
+      minimum,
+      maximum,
+      exclusiveMinimum,
+      exclusiveMaximum
+    } = rule;
+    let min = exclusiveMinimum ? value <= minimum : value < minimum;
+    let max = exclusiveMaximum ? value >= maximum : value > maximum;
+    if (minimum !== void 0 && min) {
+      return formatMessage(rule, rule.errorMessage || message["number"][exclusiveMinimum ? "exclusiveMinimum" : "minimum"]);
+    } else if (maximum !== void 0 && max) {
+      return formatMessage(rule, rule.errorMessage || message["number"][exclusiveMaximum ? "exclusiveMaximum" : "maximum"]);
+    } else if (minimum !== void 0 && maximum !== void 0 && (min || max)) {
+      return formatMessage(rule, rule.errorMessage || message["number"].range);
+    }
+    return null;
+  },
+  rangeLength(rule, value, message) {
+    if (!types.string(value) && !types.array(value)) {
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
+    }
+    let min = rule.minLength;
+    let max = rule.maxLength;
+    let val = value.length;
+    if (min !== void 0 && val < min) {
+      return formatMessage(rule, rule.errorMessage || message["length"].minLength);
+    } else if (max !== void 0 && val > max) {
+      return formatMessage(rule, rule.errorMessage || message["length"].maxLength);
+    } else if (min !== void 0 && max !== void 0 && (val < min || val > max)) {
+      return formatMessage(rule, rule.errorMessage || message["length"].range);
+    }
+    return null;
+  },
+  pattern(rule, value, message) {
+    if (!types["pattern"](rule.pattern, value)) {
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
+    }
+    return null;
+  },
+  format(rule, value, message) {
+    var customTypes = Object.keys(types);
+    var format = FORMAT_MAPPING[rule.format] ? FORMAT_MAPPING[rule.format] : rule.format || rule.arrayType;
+    if (customTypes.indexOf(format) > -1) {
+      if (!types[format](value)) {
+        return formatMessage(rule, rule.errorMessage || message.typeError);
+      }
+    }
+    return null;
+  },
+  arrayTypeFormat(rule, value, message) {
+    if (!Array.isArray(value)) {
+      return formatMessage(rule, rule.errorMessage || message.typeError);
+    }
+    for (let i = 0; i < value.length; i++) {
+      const element = value[i];
+      let formatResult = this.format(rule, element, message);
+      if (formatResult !== null) {
+        return formatResult;
+      }
+    }
+    return null;
+  }
+};
+class SchemaValidator extends RuleValidator {
+  constructor(schema, options) {
+    super(SchemaValidator.message);
+    this._schema = schema;
+    this._options = options || null;
+  }
+  updateSchema(schema) {
+    this._schema = schema;
+  }
+  async validate(data, allData) {
+    let result = this._checkFieldInSchema(data);
+    if (!result) {
+      result = await this.invokeValidate(data, false, allData);
+    }
+    return result.length ? result[0] : null;
+  }
+  async validateAll(data, allData) {
+    let result = this._checkFieldInSchema(data);
+    if (!result) {
+      result = await this.invokeValidate(data, true, allData);
+    }
+    return result;
+  }
+  async validateUpdate(data, allData) {
+    let result = this._checkFieldInSchema(data);
+    if (!result) {
+      result = await this.invokeValidateUpdate(data, false, allData);
+    }
+    return result.length ? result[0] : null;
+  }
+  async invokeValidate(data, all, allData) {
+    let result = [];
+    let schema = this._schema;
+    for (let key in schema) {
+      let value = schema[key];
+      let errorMessage = await this.validateRule(key, value, data[key], data, allData);
+      if (errorMessage != null) {
+        result.push({
+          key,
+          errorMessage
+        });
+        if (!all)
+          break;
+      }
+    }
+    return result;
+  }
+  async invokeValidateUpdate(data, all, allData) {
+    let result = [];
+    for (let key in data) {
+      let errorMessage = await this.validateRule(key, this._schema[key], data[key], data, allData);
+      if (errorMessage != null) {
+        result.push({
+          key,
+          errorMessage
+        });
+        if (!all)
+          break;
+      }
+    }
+    return result;
+  }
+  _checkFieldInSchema(data) {
+    var keys = Object.keys(data);
+    var keys2 = Object.keys(this._schema);
+    if (new Set(keys.concat(keys2)).size === keys2.length) {
+      return "";
+    }
+    var noExistFields = keys.filter((key) => {
+      return keys2.indexOf(key) < 0;
+    });
+    var errorMessage = formatMessage({
+      field: JSON.stringify(noExistFields)
+    }, SchemaValidator.message.TAG + SchemaValidator.message["defaultInvalid"]);
+    return [{
+      key: "invalid",
+      errorMessage
+    }];
+  }
+}
+function Message() {
+  return {
+    TAG: "",
+    default: "验证错误",
+    defaultInvalid: "提交的字段{field}在数据库中并不存在",
+    validateFunction: "验证无效",
+    required: "{label}必填",
+    "enum": "{label}超出范围",
+    timestamp: "{label}格式无效",
+    whitespace: "{label}不能为空",
+    typeError: "{label}类型无效",
+    date: {
+      format: "{label}日期{value}格式无效",
+      parse: "{label}日期无法解析,{value}无效",
+      invalid: "{label}日期{value}无效"
+    },
+    length: {
+      minLength: "{label}长度不能少于{minLength}",
+      maxLength: "{label}长度不能超过{maxLength}",
+      range: "{label}必须介于{minLength}和{maxLength}之间"
+    },
+    number: {
+      minimum: "{label}不能小于{minimum}",
+      maximum: "{label}不能大于{maximum}",
+      exclusiveMinimum: "{label}不能小于等于{minimum}",
+      exclusiveMaximum: "{label}不能大于等于{maximum}",
+      range: "{label}必须介于{minimum}and{maximum}之间"
+    },
+    pattern: {
+      mismatch: "{label}格式不匹配"
+    }
+  };
+}
+SchemaValidator.message = new Message();
+const deepCopy = (val) => {
+  return JSON.parse(JSON.stringify(val));
+};
+const typeFilter = (format) => {
+  return format === "int" || format === "double" || format === "number" || format === "timestamp";
+};
+const getValue = (key, value, rules) => {
+  const isRuleNumType = rules.find((val) => val.format && typeFilter(val.format));
+  const isRuleBoolType = rules.find((val) => val.format && val.format === "boolean" || val.format === "bool");
+  if (!!isRuleNumType) {
+    if (!value && value !== 0) {
+      value = null;
+    } else {
+      value = isNumber(Number(value)) ? Number(value) : value;
+    }
+  }
+  if (!!isRuleBoolType) {
+    value = isBoolean(value) ? value : false;
+  }
+  return value;
+};
+const setDataValue = (field, formdata, value) => {
+  formdata[field] = value;
+  return value || "";
+};
+const getDataValue = (field, data) => {
+  return objGet(data, field);
+};
+const realName = (name, data = {}) => {
+  const base_name = _basePath(name);
+  if (typeof base_name === "object" && Array.isArray(base_name) && base_name.length > 1) {
+    const realname = base_name.reduce((a, b) => a += `#${b}`, "_formdata_");
+    return realname;
+  }
+  return base_name[0] || name;
+};
+const isRealName = (name) => {
+  const reg = /^_formdata_#*/;
+  return reg.test(name);
+};
+const rawData = (object = {}, name) => {
+  let newData = JSON.parse(JSON.stringify(object));
+  let formData = {};
+  for (let i in newData) {
+    let path = name2arr(i);
+    objSet(formData, path, newData[i]);
+  }
+  return formData;
+};
+const name2arr = (name) => {
+  let field = name.replace("_formdata_#", "");
+  field = field.split("#").map((v) => isNumber(v) ? Number(v) : v);
+  return field;
+};
+const objSet = (object, path, value) => {
+  if (typeof object !== "object")
+    return object;
+  _basePath(path).reduce((o2, k, i, _) => {
+    if (i === _.length - 1) {
+      o2[k] = value;
+      return null;
+    } else if (k in o2) {
+      return o2[k];
+    } else {
+      o2[k] = /^[0-9]{1,}$/.test(_[i + 1]) ? [] : {};
+      return o2[k];
+    }
+  }, object);
+  return object;
+};
+function _basePath(path) {
+  if (Array.isArray(path))
+    return path;
+  return path.replace(/\[/g, ".").replace(/\]/g, "").split(".");
+}
+const objGet = (object, path, defaultVal = "undefined") => {
+  let newPath = _basePath(path);
+  let val = newPath.reduce((o2, k) => {
+    return (o2 || {})[k];
+  }, object);
+  return !val || val !== void 0 ? val : defaultVal;
+};
+const isNumber = (num) => {
+  return !isNaN(Number(num));
+};
+const isBoolean = (bool) => {
+  return typeof bool === "boolean";
+};
+const isRequiredField = (rules) => {
+  let isNoField = false;
+  for (let i = 0; i < rules.length; i++) {
+    const ruleData = rules[i];
+    if (ruleData.required) {
+      isNoField = true;
+      break;
+    }
+  }
+  return isNoField;
+};
+const isEqual = (a, b) => {
+  if (a === b) {
+    return a !== 0 || 1 / a === 1 / b;
+  }
+  if (a == null || b == null) {
+    return a === b;
+  }
+  var classNameA = toString.call(a), classNameB = toString.call(b);
+  if (classNameA !== classNameB) {
+    return false;
+  }
+  switch (classNameA) {
+    case "[object RegExp]":
+    case "[object String]":
+      return "" + a === "" + b;
+    case "[object Number]":
+      if (+a !== +a) {
+        return +b !== +b;
+      }
+      return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+    case "[object Date]":
+    case "[object Boolean]":
+      return +a === +b;
+  }
+  if (classNameA == "[object Object]") {
+    var propsA = Object.getOwnPropertyNames(a), propsB = Object.getOwnPropertyNames(b);
+    if (propsA.length != propsB.length) {
+      return false;
+    }
+    for (var i = 0; i < propsA.length; i++) {
+      var propName = propsA[i];
+      if (a[propName] !== b[propName]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  if (classNameA == "[object Array]") {
+    if (a.toString() == b.toString()) {
+      return true;
+    }
+    return false;
+  }
+};
 class MPAnimation {
   constructor(options, _this) {
     this.options = options;
@@ -7732,16 +8358,25 @@ function createAnimation(option, _this) {
   clearTimeout(_this.timer);
   return new MPAnimation(option, _this);
 }
+exports.SchemaValidator = SchemaValidator;
 exports._export_sfc = _export_sfc;
+exports.bindIngXMixins = bindIngXMixins;
 exports.computed = computed;
 exports.createAnimation = createAnimation;
 exports.createPinia = createPinia;
 exports.createSSRApp = createSSRApp;
+exports.deepCopy = deepCopy;
 exports.defineComponent = defineComponent;
 exports.defineStore = defineStore;
 exports.e = e;
 exports.f = f;
+exports.getDataValue = getDataValue;
+exports.getValue = getValue;
 exports.index = index;
+exports.isEqual = isEqual;
+exports.isRealName = isRealName;
+exports.isRequiredField = isRequiredField;
+exports.mpwxs = mpwxs;
 exports.n = n;
 exports.o = o;
 exports.onHide = onHide;
@@ -7749,10 +8384,14 @@ exports.onLaunch = onLaunch;
 exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onShow = onShow;
+exports.otherMixins = otherMixins;
 exports.p = p;
+exports.rawData = rawData;
+exports.realName = realName;
 exports.ref = ref;
 exports.resolveComponent = resolveComponent;
 exports.s = s;
+exports.setDataValue = setDataValue;
 exports.sr = sr;
 exports.src_default = src_default;
 exports.t = t;

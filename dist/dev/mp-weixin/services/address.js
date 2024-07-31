@@ -26,6 +26,13 @@ const putMemberAddressByIdAPI = (id, data) => {
     data
   });
 };
+const deleteMemberAddressByIdAPI = (id) => {
+  return utils_http.http({
+    method: "DELETE",
+    url: `/member/address/${id}`
+  });
+};
+exports.deleteMemberAddressByIdAPI = deleteMemberAddressByIdAPI;
 exports.getMemberAddressAPI = getMemberAddressAPI;
 exports.getMemberAddressByIdAPI = getMemberAddressByIdAPI;
 exports.postMemberAddressAPI = postMemberAddressAPI;

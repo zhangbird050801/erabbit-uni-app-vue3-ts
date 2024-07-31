@@ -23,3 +23,7 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+.app.data-v-fb6ea9e5 {
+  padding: 30rpx;
+  font-size: 28rpx;
+}

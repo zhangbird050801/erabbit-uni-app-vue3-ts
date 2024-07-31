@@ -4,6 +4,16 @@ const services_address = require("../../services/address.js");
 require("../../utils/http.js");
 require("../../stores/index.js");
 require("../../stores/modules/member.js");
+if (!Array) {
+  const _easycom_uni_forms_item2 = common_vendor.resolveComponent("uni-forms-item");
+  const _easycom_uni_forms2 = common_vendor.resolveComponent("uni-forms");
+  (_easycom_uni_forms_item2 + _easycom_uni_forms2)();
+}
+const _easycom_uni_forms_item = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-forms-item/uni-forms-item.js";
+const _easycom_uni_forms = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-forms/uni-forms.js";
+if (!Math) {
+  (_easycom_uni_forms_item + _easycom_uni_forms)();
+}
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "address-form",
   props: {
@@ -53,36 +63,87 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const onSwitchChange = (ev) => {
       form.value.isDefault = ev.detail.value ? 1 : 0;
     };
-    const onSubmit = async () => {
-      if (query.id) {
-        await services_address.putMemberAddressByIdAPI(query.id, form.value);
-      } else {
-        await services_address.postMemberAddressAPI(form.value);
+    const rules = {
+      receiver: {
+        rules: [
+          {
+            required: true,
+            errorMessage: "请输入收货人姓名"
+          }
+        ]
+      },
+      contact: {
+        rules: [
+          { required: true, errorMessage: "请输入联系方式" },
+          { pattern: /^1[3-9]\d{9}$/, errorMessage: "手机号格式不正确" }
+        ]
+      },
+      fullLocation: {
+        rules: [{ required: true, errorMessage: "请选择所在地区" }]
+      },
+      address: {
+        rules: [{ required: true, errorMessage: "请选择详细地址" }]
       }
-      common_vendor.index.showToast({
-        icon: "success",
-        title: query.id ? "修改成功" : "添加成功"
-      });
-      setTimeout(() => {
-        common_vendor.index.navigateBack();
-      }, 400);
+    };
+    const formRef = common_vendor.ref();
+    const onSubmit = async () => {
+      var _a, _b;
+      try {
+        await ((_b = (_a = formRef.value) == null ? void 0 : _a.validate) == null ? void 0 : _b.call(_a));
+        if (query.id) {
+          await services_address.putMemberAddressByIdAPI(query.id, form.value);
+        } else {
+          await services_address.postMemberAddressAPI(form.value);
+        }
+        common_vendor.index.showToast({
+          icon: "success",
+          title: query.id ? "修改成功" : "添加成功"
+        });
+        setTimeout(() => {
+          common_vendor.index.navigateBack();
+        }, 400);
+      } catch (error) {
+        common_vendor.index.showToast({
+          icon: "error",
+          title: "请填写完整信息"
+        });
+      }
     };
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: form.value.receiver,
         b: common_vendor.o(($event) => form.value.receiver = $event.detail.value),
-        c: form.value.contact,
-        d: common_vendor.o(($event) => form.value.contact = $event.detail.value),
-        e: form.value.fullLocation
+        c: common_vendor.p({
+          name: "receiver"
+        }),
+        d: form.value.contact,
+        e: common_vendor.o(($event) => form.value.contact = $event.detail.value),
+        f: common_vendor.p({
+          name: "contact"
+        }),
+        g: form.value.fullLocation
       }, form.value.fullLocation ? {
-        f: common_vendor.t(form.value.fullLocation)
+        h: common_vendor.t(form.value.fullLocation)
       } : {}, {
-        g: common_vendor.o(onRegionChange),
-        h: form.value.address,
-        i: common_vendor.o(($event) => form.value.address = $event.detail.value),
-        j: common_vendor.o(onSwitchChange),
-        k: form.value.isDefault === 1,
-        l: common_vendor.o(onSubmit)
+        i: common_vendor.o(onRegionChange),
+        j: common_vendor.p({
+          name: "fullLocation"
+        }),
+        k: form.value.address,
+        l: common_vendor.o(($event) => form.value.address = $event.detail.value),
+        m: common_vendor.p({
+          name: "address"
+        }),
+        n: common_vendor.o(onSwitchChange),
+        o: form.value.isDefault === 1,
+        p: common_vendor.sr(formRef, "efdf2cee-0", {
+          "k": "formRef"
+        }),
+        q: common_vendor.p({
+          rules,
+          model: form.value
+        }),
+        r: common_vendor.o(onSubmit)
       });
     };
   }
