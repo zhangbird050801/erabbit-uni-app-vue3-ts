@@ -31,7 +31,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       memberStore.setProfile(profile);
       common_vendor.index.showToast({ icon: "success", title: "登录成功" });
       setTimeout(() => {
-        common_vendor.index.switchTab({ url: "/pages/my/my" });
+        common_vendor.index.navigateBack();
       }, 500);
     };
     return (_ctx, _cache) => {

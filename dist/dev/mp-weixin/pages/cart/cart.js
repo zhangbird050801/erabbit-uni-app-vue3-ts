@@ -1,162 +1,124 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const _sfc_main = {
-  data() {
-    return {
-      // 是否打开SKU弹窗
-      skuKey: false,
-      // SKU弹窗模式
-      skuMode: 1,
-      // 后端返回的商品信息
-      goodsInfo: {}
-    };
-  },
-  // 监听 - 页面每次【加载时】执行(如：前进)
-  onLoad(options) {
-    this.init(options);
-  },
-  methods: {
-    // 初始化
-    init(options = {}) {
-    },
-    // 获取商品信息，并打开sku弹出
-    openSkuPopup() {
-      this.goodsInfo = {
-        "_id": "001",
-        "name": "iphone11",
-        "goods_thumb": "https://img14.360buyimg.com/n0/jfs/t1/59022/28/10293/141808/5d78088fEf6e7862d/68836f52ffaaad96.jpg",
-        "sku_list": [
-          {
-            "_id": "001",
-            "goods_id": "001",
-            "goods_name": "iphone11",
-            "image": "https://img14.360buyimg.com/n0/jfs/t1/79668/22/9987/159271/5d780915Ebf9bf3f4/6a1b2703a9ed8737.jpg",
-            "price": 19800,
-            "sku_name_arr": ["红色", "128G", "公开版"],
-            "stock": 1e3
-          },
-          {
-            "_id": "002",
-            "goods_id": "001",
-            "goods_name": "iphone11",
-            "image": "https://img14.360buyimg.com/n0/jfs/t1/52252/35/10516/124064/5d7808e0E46202391/7100f3733a1c1f00.jpg",
-            "price": 9800,
-            "sku_name_arr": ["白色", "256G", "公开版"],
-            "stock": 100
-          },
-          {
-            "_id": "003",
-            "goods_id": "001",
-            "goods_name": "iphone11",
-            "image": "https://img14.360buyimg.com/n0/jfs/t1/79668/22/9987/159271/5d780915Ebf9bf3f4/6a1b2703a9ed8737.jpg",
-            "price": 19800,
-            "sku_name_arr": ["红色", "256G", "公开版"],
-            "stock": 1
-          }
-        ],
-        "spec_list": [
-          {
-            "name": "颜色",
-            "list": [
-              { "name": "红色" },
-              { "name": "黑色" },
-              { "name": "白色" }
-            ]
-          },
-          {
-            "name": "内存",
-            "list": [
-              { "name": "128G" },
-              { "name": "256G" }
-            ]
-          },
-          {
-            "name": "版本",
-            "list": [
-              { "name": "公开版" },
-              { "name": "非公开版" }
-            ]
-          }
-        ]
-      };
-      this.skuKey = true;
-    },
-    // sku组件 开始-----------------------------------------------------------
-    onOpenSkuPopup() {
-      console.log("监听 - 打开sku组件");
-    },
-    onCloseSkuPopup() {
-      console.log("监听 - 关闭sku组件");
-    },
-    // 加入购物车前的判断
-    addCartFn(obj) {
-      let { selectShop } = obj;
-      let res = {};
-      let name = selectShop.goods_name;
-      if (selectShop.sku_name != "默认") {
-        name += "-" + selectShop.sku_name_arr;
-      }
-      res.msg = `${name} 已添加到购物车`;
-      if (typeof obj.success == "function")
-        obj.success(res);
-    },
-    // 加入购物车按钮
-    addCart(selectShop) {
-      console.log("监听 - 加入购物车");
-      this.addCartFn({
-        selectShop,
-        success: (res) => {
-          this.toast(res.msg);
-          setTimeout(() => {
-            this.skuKey = false;
-          }, 300);
-        }
-      });
-    },
-    // 立即购买
-    buyNow(selectShop) {
-      console.log("监听 - 立即购买");
-      this.addCartFn({
-        selectShop,
-        success: (res) => {
-          this.toast("立即购买");
-        }
-      });
-    },
-    toast(msg) {
-      common_vendor.index.showToast({
-        title: msg,
-        icon: "none"
-      });
-    }
-  }
-};
+const services_cart = require("../../services/cart.js");
+require("../../stores/index.js");
+const stores_modules_member = require("../../stores/modules/member.js");
+require("../../utils/http.js");
 if (!Array) {
-  const _easycom_vk_data_goods_sku_popup2 = common_vendor.resolveComponent("vk-data-goods-sku-popup");
-  _easycom_vk_data_goods_sku_popup2();
+  const _easycom_vk_data_input_number_box2 = common_vendor.resolveComponent("vk-data-input-number-box");
+  const _easycom_uni_swipe_action_item2 = common_vendor.resolveComponent("uni-swipe-action-item");
+  const _easycom_uni_swipe_action2 = common_vendor.resolveComponent("uni-swipe-action");
+  const _easycom_XtxGuess2 = common_vendor.resolveComponent("XtxGuess");
+  (_easycom_vk_data_input_number_box2 + _easycom_uni_swipe_action_item2 + _easycom_uni_swipe_action2 + _easycom_XtxGuess2)();
 }
-const _easycom_vk_data_goods_sku_popup = () => "../../components/vk-data-goods-sku-popup/vk-data-goods-sku-popup.js";
+const _easycom_vk_data_input_number_box = () => "../../components/vk-data-input-number-box/vk-data-input-number-box.js";
+const _easycom_uni_swipe_action_item = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-swipe-action-item/uni-swipe-action-item.js";
+const _easycom_uni_swipe_action = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-swipe-action/uni-swipe-action.js";
+const _easycom_XtxGuess = () => "../../components/XtxGuess.js";
 if (!Math) {
-  _easycom_vk_data_goods_sku_popup();
+  (_easycom_vk_data_input_number_box + _easycom_uni_swipe_action_item + _easycom_uni_swipe_action + _easycom_XtxGuess)();
 }
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return {
-    a: common_vendor.o(($event) => $options.openSkuPopup()),
-    b: common_vendor.sr("skuPopup", "fb6ea9e5-0"),
-    c: common_vendor.o($options.onOpenSkuPopup),
-    d: common_vendor.o($options.onCloseSkuPopup),
-    e: common_vendor.o($options.addCart),
-    f: common_vendor.o($options.buyNow),
-    g: common_vendor.o(($event) => $data.skuKey = $event),
-    h: common_vendor.p({
-      ["border-radius"]: "20",
-      ["z-index"]: 990,
-      localdata: $data.goodsInfo,
-      mode: $data.skuMode,
-      modelValue: $data.skuKey
-    })
-  };
-}
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-fb6ea9e5"], ["__file", "D:/uniapp/erabbit-uni-app-vue3-ts/src/pages/cart/cart.vue"]]);
+const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
+  __name: "cart",
+  setup(__props) {
+    const memberStore = stores_modules_member.useMemberStore();
+    const cartList = common_vendor.ref([]);
+    const getMemberCartData = async () => {
+      const res = await services_cart.getMemberCartAPI();
+      cartList.value = res.result;
+    };
+    const onDeleteCart = (skuId) => {
+      common_vendor.index.showModal({
+        content: "是否删除",
+        success: async (res) => {
+          if (res.confirm) {
+            await services_cart.deleteMemberCartAPI({ ids: [skuId] });
+            getMemberCartData();
+          }
+        }
+      });
+    };
+    const onChangeCount = (ev) => {
+      services_cart.putMemberCartBySkuIdAPI(ev.index, { count: ev.value });
+    };
+    const onChangeSelected = (item) => {
+      item.selected = !item.selected;
+      services_cart.putMemberCartBySkuIdAPI(item.skuId, { selected: item.selected });
+    };
+    const isSelectedAll = common_vendor.computed(() => {
+      return cartList.value.length && cartList.value.every((v) => v.selected);
+    });
+    const onChangeSelectedAll = () => {
+      const _isSelectedAll = !isSelectedAll.value;
+      cartList.value.forEach((item) => {
+        item.selected = _isSelectedAll;
+      });
+      services_cart.putMemberCartSelectedAPI({ selected: _isSelectedAll });
+    };
+    const selectedCartList = common_vendor.computed(() => {
+      return cartList.value.filter((v) => v.selected);
+    });
+    const selectedCartListCount = common_vendor.computed(() => {
+      return selectedCartList.value.reduce((sum, item) => sum + item.count, 0);
+    });
+    const selectedCartListMoney = common_vendor.computed(() => {
+      return selectedCartList.value.reduce((sum, item) => sum + item.count * item.nowPrice, 0).toFixed(2);
+    });
+    const gotoPayment = () => {
+      if (selectedCartListCount.value === 0) {
+        return common_vendor.index.showToast({
+          icon: "none",
+          title: "请选择商品"
+        });
+      }
+    };
+    common_vendor.onShow(() => {
+      if (memberStore.profile) {
+        getMemberCartData();
+      }
+    });
+    return (_ctx, _cache) => {
+      return common_vendor.e({
+        a: common_vendor.unref(memberStore).profile
+      }, common_vendor.unref(memberStore).profile ? common_vendor.e({
+        b: cartList.value.length
+      }, cartList.value.length ? {
+        c: common_vendor.f(cartList.value, (item, k0, i0) => {
+          return {
+            a: common_vendor.o(($event) => onChangeSelected(item), item.skuId),
+            b: item.selected ? 1 : "",
+            c: item.picture,
+            d: common_vendor.t(item.name),
+            e: common_vendor.t(item.attrsText),
+            f: common_vendor.t(item.nowPrice),
+            g: `/pages/goods/goods?id=${item.id}`,
+            h: common_vendor.o(onChangeCount, item.skuId),
+            i: "2c58996f-2-" + i0 + "," + ("2c58996f-1-" + i0),
+            j: common_vendor.o(($event) => item.count = $event, item.skuId),
+            k: common_vendor.p({
+              min: 1,
+              max: item.stock,
+              index: item.skuId,
+              modelValue: item.count
+            }),
+            l: common_vendor.o(($event) => onDeleteCart(item.skuId), item.skuId),
+            m: item.skuId,
+            n: "2c58996f-1-" + i0 + ",2c58996f-0"
+          };
+        })
+      } : {}, {
+        d: common_vendor.o(onChangeSelectedAll),
+        e: common_vendor.unref(isSelectedAll) ? 1 : "",
+        f: common_vendor.t(common_vendor.unref(selectedCartListMoney)),
+        g: common_vendor.t(common_vendor.unref(selectedCartListCount)),
+        h: common_vendor.o(gotoPayment),
+        i: common_vendor.unref(selectedCartListCount) === 0 ? 1 : ""
+      }) : {}, {
+        j: common_vendor.sr("guessRef", "2c58996f-3")
+      });
+    };
+  }
+});
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "D:/uniapp/erabbit-uni-app-vue3-ts/src/pages/cart/cart.vue"]]);
 wx.createPage(MiniProgramPage);
 //# sourceMappingURL=cart.js.map
