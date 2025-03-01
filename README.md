@@ -96,4 +96,3 @@ npm run dev:h5
 ├── tsconfig.json              # typescript 配置
 └── vite.config.ts             # vite 配置
 ```
-# erabbit-uni-app-vue3-ts
